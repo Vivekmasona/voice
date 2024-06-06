@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listener</title>
+</head>
+<body>
+    <h1>Listener</h1>
+    <audio id="remoteAudio" controls autoplay></audio>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        let remoteStream = new MediaStream();
+        let remotePeerConnection;
+
+        const remoteAudio = document.getElementById('remoteAudio');
+        remoteAudio.srcObject = remoteStream;
+
+        const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        remotePeerConnection = new RTCPeerConnection(configuration);
+
+        remotePeerConnection.onicecandidate = e => {
+            if (e.candidate) {
+                socket.emit('candidate', e.candidate);
+            }
+        };
+
+        remotePeerConnection.ontrack = event => {
+            remoteStream.addTrack(event.track);
+        };
+
+        socket.on('offer', (offer) => {
+            remotePeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            remotePeerConnection.createAnswer()
+                .then(answer => {
+                    remotePeerConnection.setLocalDescription(answer);
+                    socket.emit('answer', answer);
+                })
+                .catch(error => console.error('Error creating answer.', error));
+        });
+
+        socket.on('candidate', (candidate) => {
+            const newCandidate = new RTCIceCandidate(candidate);
+            remotePeerConnection.addIceCandidate(newCandidate);
+        });
+    </script>
+</body>
+</html>
