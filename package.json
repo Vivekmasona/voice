@@ -1,7 +1,7 @@
 {
   "name": "web-communication-system",
   "version": "1.0.0",
-  "description": "WebRTC based voice broadcasting system",
+  "description": "WebRTC based voice communication system",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
