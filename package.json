@@ -1,0 +1,13 @@
+{
+  "name": "web-communication-system",
+  "version": "1.0.0",
+  "description": "WebRTC based voice broadcasting system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.0.1"
+  }
+}
